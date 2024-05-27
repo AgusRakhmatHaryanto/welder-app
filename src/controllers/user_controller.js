@@ -18,7 +18,7 @@ exports.login = async (req, res) => {
     const user = await userService.login(req.body.email, req.body.password);
     res.status(200).send({
       token: user.token,
-      user: user.username,
+      username: user.user.username,
     });
   } catch (error) {
     console.log(error);

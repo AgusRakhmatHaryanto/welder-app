@@ -19,14 +19,7 @@ async function findById(id) {
   return user;
 }
 
-async function findByEmail(email) {
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-  return user;
-}
+
 
 async function findAll() {
   const users = await prisma.user.findMany();
@@ -66,7 +59,6 @@ async function deleteById(id) {
 module.exports = {
   create,
   findById,
-  findByEmail,
   findAll,
   findByEmail,
   update,
