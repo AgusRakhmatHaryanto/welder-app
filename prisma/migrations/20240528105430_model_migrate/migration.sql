@@ -47,14 +47,14 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Product" (
     "id" VARCHAR(36) NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
-    "description" TEXT NOT NULL,
-    "richDesription" TEXT NOT NULL,
+    "name" VARCHAR(255),
+    "description" TEXT,
+    "richDesription" TEXT,
     "image" VARCHAR(150),
     "images" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "price" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "price" DOUBLE PRECISION DEFAULT 0,
     "categoryId" VARCHAR(36),
-    "countInStock" INTEGER NOT NULL DEFAULT 0,
+    "countInStock" INTEGER DEFAULT 0,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL
 );

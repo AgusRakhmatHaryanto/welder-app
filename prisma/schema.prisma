@@ -81,15 +81,15 @@ model Category {
 // Model Product
 model Product {
   id             String      @unique @default(uuid()) @db.VarChar(36)
-  name           String      @db.VarChar(255)
-  description    String      @db.Text()
-  richDesription String      @db.Text()
+  name           String?     @db.VarChar(255)
+  description    String?     @db.Text()
+  richDesription String?     @db.Text()
   image          String?     @db.VarChar(150)
   images         String[]    @default([])
-  price          Float       @default(0)
+  price          Float?      @default(0)
   categoryId     String?     @db.VarChar(36)
   category       Category?   @relation(fields: [categoryId], references: [id])
-  countInStock   Int         @default(0)
+  countInStock   Int?        @default(0)
   createdAt      DateTime    @default(now()) @db.Timestamp(6)
   updatedAt      DateTime    @updatedAt @db.Timestamp(6)
   OrderItem      OrderItem[]
