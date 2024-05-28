@@ -13,13 +13,105 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  dev
+  admin
+  customer
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  SHIPPED
+  CANCELLED
+}
+
+enum InstallationStatus {
+  NOT_APPLICABLE
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+}
+
+// Model User
 model User {
-  id        String   @unique @default(uuid())
-  username  String
-  name      String
-  email     String  @unique
-  password  String
-  profile   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String         @unique @default(uuid()) @db.VarChar(36)
+  username   String         @db.VarChar(255)
+  name       String         @db.VarChar(255)
+  email      String         @unique @db.VarChar(255)
+  password   String         @db.VarChar(100)
+  phone      String?        @db.VarChar(50)
+  address    String?        @db.Text()
+  postalCode String?        @db.VarChar(15)
+  City       String?        @db.VarChar(100)
+  province   String?        @db.VarChar(100)
+  profile    String?        @db.VarChar(150)
+  role       Role           @default(customer)
+  createdAt  DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime       @updatedAt @db.Timestamp(6)
+  token      RefreshToken[]
+  Order      Order[]
+}
+
+// Model RefreshToken
+model RefreshToken {
+  id        String   @unique @default(uuid()) @db.VarChar(36)
+  token     String   @db.VarChar(255)
+  userId    String?  @unique @db.VarChar(36)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+// Model Category
+model Category {
+  id        String    @unique @default(uuid()) @db.VarChar(36)
+  name      String    @unique @db.VarChar(100)
+  Product   Product[]
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @db.Timestamp(6)
+}
+
+// Model Product
+model Product {
+  id             String      @unique @default(uuid()) @db.VarChar(36)
+  name           String      @db.VarChar(255)
+  description    String      @db.Text()
+  richDesription String      @db.Text()
+  image          String?     @db.VarChar(150)
+  images         String[]    @default([])
+  price          Float       @default(0)
+  categoryId     String?     @db.VarChar(36)
+  category       Category?   @relation(fields: [categoryId], references: [id])
+  countInStock   Int         @default(0)
+  createdAt      DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime    @updatedAt @db.Timestamp(6)
+  OrderItem      OrderItem[]
+}
+
+model Order {
+  id            String             @unique @default(uuid()) @db.VarChar(36)
+  status        OrderStatus        @default(PENDING)
+  instalation   InstallationStatus @default(NOT_APPLICABLE)
+  paymentStatus PaymentStatus      @default(PENDING)
+  userId        String?            @unique @db.VarChar(36)
+  createdAt     DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime           @updatedAt @db.Timestamp(6)
+  User          User?              @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        String   @unique @default(uuid()) @db.VarChar(36)
+  quantity  Int      @default(0)
+  Order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   String?  @unique @db.VarChar(36)
+  productId String?  @unique @db.VarChar(36)
+  Product   Product? @relation(fields: [productId], references: [id])
 }
