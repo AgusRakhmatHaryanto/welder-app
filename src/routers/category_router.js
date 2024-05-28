@@ -8,5 +8,6 @@ router.get("/:id", categoryController.findById);
 router.post("/", postFormData.none(), categoryController.create);
 router.put("/:id", postFormData.none(), categoryController.update);
 router.delete("/:id", categoryController.deleteById);
+router.delete("/", categoryController.deleteAll);
 
 module.exports = router;

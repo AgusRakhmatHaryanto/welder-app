@@ -1,3 +1,4 @@
+
 const {PrismaClient} = require("@prisma/client");
 
 const prisma = new PrismaClient();
@@ -42,10 +43,16 @@ async function deleteById(id) {
     return category;
 }
 
+async function deleteAll() {
+    const categories = await prisma.category.deleteMany();
+    return categories;
+}
+
 module.exports = {
     findAll,
     findById,
     create,
     update,
-    deleteById
+    deleteById,
+    deleteAll
 }

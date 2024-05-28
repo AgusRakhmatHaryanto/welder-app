@@ -21,10 +21,16 @@ const findById = async (id) => {
   return category;
 };
 
+const deleteAll = async () => {
+  const categories = await categoryRepository.deleteAll();
+  return categories;
+};
+
 module.exports = {
   create,
   update,
   deleteById,
   findAll,
   findById,
+  deleteAll,
 };

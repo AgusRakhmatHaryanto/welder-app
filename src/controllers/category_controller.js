@@ -64,3 +64,16 @@ exports.findAll = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+exports.deleteAll = async (req, res) => {
+  try {
+    const categories = await categoryService.deleteAll();
+    res.status(200).send({
+      message: "Categories were deleted successfully!",
+      data: categories,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+};
