@@ -43,8 +43,8 @@ enum PaymentStatus {
 // Model User
 model User {
   id         String         @unique @default(uuid()) @db.VarChar(36)
-  username   String         @db.VarChar(255)
-  name       String         @db.VarChar(255)
+  username   String?        @db.VarChar(255)
+  name       String?        @db.VarChar(255)
   email      String         @unique @db.VarChar(255)
   password   String         @db.VarChar(100)
   phone      String?        @db.VarChar(50)
@@ -62,8 +62,8 @@ model User {
 
 // Model RefreshToken
 model RefreshToken {
-  id        String   @unique @default(uuid()) @db.VarChar(36)
-  token     String   @db.VarChar(255)
+  // id        String   @unique @default(uuid()) @db.VarChar(36)
+  token     String   @unique @db.VarChar(255)
   userId    String?  @unique @db.VarChar(36)
   createdAt DateTime @default(now()) @db.Timestamp(6)
   user      User?    @relation(fields: [userId], references: [id])
@@ -100,6 +100,7 @@ model Order {
   status        OrderStatus        @default(PENDING)
   instalation   InstallationStatus @default(NOT_APPLICABLE)
   paymentStatus PaymentStatus      @default(PENDING)
+  totalPrice    Float?             @default(0)
   userId        String?            @unique @db.VarChar(36)
   createdAt     DateTime           @default(now()) @db.Timestamp(6)
   updatedAt     DateTime           @updatedAt @db.Timestamp(6)

@@ -13,8 +13,8 @@ CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'COMPLETED', 'REFUNDED');
 -- CreateTable
 CREATE TABLE "User" (
     "id" VARCHAR(36) NOT NULL,
-    "username" VARCHAR(255) NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
+    "username" VARCHAR(255),
+    "name" VARCHAR(255),
     "email" VARCHAR(255) NOT NULL,
     "password" VARCHAR(100) NOT NULL,
     "phone" VARCHAR(50),
@@ -30,7 +30,6 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "RefreshToken" (
-    "id" VARCHAR(36) NOT NULL,
     "token" VARCHAR(255) NOT NULL,
     "userId" VARCHAR(36),
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -65,6 +64,7 @@ CREATE TABLE "Order" (
     "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
     "instalation" "InstallationStatus" NOT NULL DEFAULT 'NOT_APPLICABLE',
     "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
+    "totalPrice" DOUBLE PRECISION DEFAULT 0,
     "userId" VARCHAR(36),
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL
@@ -85,7 +85,7 @@ CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RefreshToken_id_key" ON "RefreshToken"("id");
+CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RefreshToken_userId_key" ON "RefreshToken"("userId");

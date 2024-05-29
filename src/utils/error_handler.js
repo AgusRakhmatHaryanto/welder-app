@@ -1,6 +1,7 @@
 function errorHandler(err, req, res, next) {
     if (err) {
-        console.log(er.stack);
+        console.log(err.stack);
+        console.log(err.message);
         res.status(500).send(err.message);
     }
 }
