@@ -42,57 +42,89 @@ enum PaymentStatus {
 
 // Model User
 model User {
-  id         String         @unique @default(uuid()) @db.VarChar(36)
-  username   String?        @db.VarChar(255)
-  name       String?        @db.VarChar(255)
-  email      String         @unique @db.VarChar(255)
-  password   String         @db.VarChar(100)
-  phone      String?        @db.VarChar(50)
-  address    String?        @db.Text()
-  postalCode String?        @db.VarChar(15)
-  City       String?        @db.VarChar(100)
-  province   String?        @db.VarChar(100)
-  profile    String?        @db.VarChar(150)
-  role       Role           @default(customer)
-  createdAt  DateTime       @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime       @updatedAt @db.Timestamp(6)
-  token      RefreshToken[]
-  Order      Order[]
+  id          String         @unique @default(uuid()) @db.VarChar(36)
+  username    String?        @db.VarChar(255)
+  name        String?        @db.VarChar(255)
+  email       String         @unique @db.VarChar(100)
+  password    String         @db.VarChar(100)
+  phone       String?        @db.VarChar(50)
+  address     String?        @db.Text()
+  postalCode  String?        @db.VarChar(15)
+  city        String?        @db.VarChar(100)
+  province    String?        @db.VarChar(100)
+  profile     String?        @db.VarChar(150)
+  role        Role           @default(customer)
+  isVerified  Boolean        @default(false)
+  verifyToken String?        @db.VarChar(255)
+  createdAt   DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime       @updatedAt @db.Timestamp(6)
+  token       RefreshToken[]
+  order       Order[]
+  Review      Review[]
 }
 
 // Model RefreshToken
 model RefreshToken {
   // id        String   @unique @default(uuid()) @db.VarChar(36)
-  token     String   @unique @db.VarChar(255)
+  token     String   @unique @db.VarChar(150)
   userId    String?  @unique @db.VarChar(36)
   createdAt DateTime @default(now()) @db.Timestamp(6)
   user      User?    @relation(fields: [userId], references: [id])
 }
 
+model Progress {
+  id          String    @unique @default(uuid()) @db.VarChar(36)
+  description String?   @db.Text()
+  orderItemId String    @unique @db.VarChar(36)
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Review {
+  description String?  @db.Text()
+  productId   String   @unique @db.VarChar(36)
+  userId      String   @unique @db.VarChar(36)
+  product     Product  @relation(fields: [productId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // Model Category
 model Category {
-  id        String    @unique @default(uuid()) @db.VarChar(36)
-  name      String    @unique @db.VarChar(100)
-  Product   Product[]
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime  @updatedAt @db.Timestamp(6)
+  id        String            @unique @default(uuid()) @db.VarChar(36)
+  name      String            @unique @db.VarChar(100)
+  product   ProductCategory[]
+  createdAt DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt DateTime          @updatedAt @db.Timestamp(6)
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  Category   Category @relation(fields: [categoryId], references: [id])
+  Product    Product  @relation(fields: [productId], references: [id])
+
+  @@id([productId, categoryId])
 }
 
 // Model Product
 model Product {
-  id             String      @unique @default(uuid()) @db.VarChar(36)
-  name           String?     @db.VarChar(255)
-  description    String?     @db.Text()
-  richDesription String?     @db.Text()
-  image          String?     @db.VarChar(150)
-  images         String[]    @default([])
-  price          Float?      @default(0)
-  categoryId     String?     @db.VarChar(36)
-  category       Category?   @relation(fields: [categoryId], references: [id])
-  countInStock   Int?        @default(0)
-  createdAt      DateTime    @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime    @updatedAt @db.Timestamp(6)
-  OrderItem      OrderItem[]
+  id             String            @unique @default(uuid()) @db.VarChar(36)
+  name           String?           @db.VarChar(255)
+  description    String?           @db.Text()
+  richDesription String?           @db.Text()
+  image          String?           @db.VarChar(150)
+  images         String[]          @default([])
+  price          Float?            @default(0)
+  categories     ProductCategory[]
+  countInStock   Int?              @default(0)
+  createdAt      DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime          @updatedAt @db.Timestamp(6)
+  orderItem      OrderItem[]
+  Review         Review[]
 }
 
 model Order {
@@ -104,15 +136,16 @@ model Order {
   userId        String?            @unique @db.VarChar(36)
   createdAt     DateTime           @default(now()) @db.Timestamp(6)
   updatedAt     DateTime           @updatedAt @db.Timestamp(6)
-  User          User?              @relation(fields: [userId], references: [id])
+  user          User?              @relation(fields: [userId], references: [id])
   items         OrderItem[]
 }
 
 model OrderItem {
-  id        String   @unique @default(uuid()) @db.VarChar(36)
-  quantity  Int      @default(0)
-  Order     Order?   @relation(fields: [orderId], references: [id])
-  orderId   String?  @unique @db.VarChar(36)
-  productId String?  @unique @db.VarChar(36)
-  Product   Product? @relation(fields: [productId], references: [id])
+  id        String     @unique @default(uuid()) @db.VarChar(36)
+  quantity  Int        @default(0)
+  order     Order?     @relation(fields: [orderId], references: [id])
+  orderId   String?    @unique @db.VarChar(36)
+  productId String?    @unique @db.VarChar(36)
+  product   Product?   @relation(fields: [productId], references: [id])
+  Progress  Progress[]
 }

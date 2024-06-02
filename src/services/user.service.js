@@ -1,11 +1,19 @@
 const userRepository = require("../repositories/user_repository");
 const { hashPassword, comparePassword } = require("../utils/hash_password");
-const { generateToken } = require("../utils/jwt");
+const { generateToken, generateVerifyToken } = require("../utils/jwt");
+const { sendVerifyEmail } = require("../utils/message_send_email");
+
 
 async function create(data) {
   const hashedPassword = await hashPassword(data.password);
   data.password = hashedPassword;
+  const verifyToken = await generateVerifyToken({ email: data.email });
+  data.verifyToken = verifyToken;
   const user = await userRepository.create(data);
+  await sendVerifyEmail(data.email, verifyToken);
+  if (!user) {
+    throw new Error("User not created");
+  }
   return user;
 }
 

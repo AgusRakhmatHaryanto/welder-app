@@ -17,11 +17,14 @@ async function findTokenById(userId) {
     where: {
       userId,
     },
+    include: {
+      user: true,
+    },
   });
-  
-//   if (!token) {
-//     throw new Error("Token not found");
-//   }
+
+  //   if (!token) {
+  //     throw new Error("Token not found");
+  //   }
 
   return token;
 }
@@ -30,6 +33,9 @@ async function findByToken(token) {
   const tokenExists = await prisma.refreshToken.findUnique({
     where: {
       token,
+    },
+    include: {
+      user: true,
     },
   });
   if (!tokenExists) {
@@ -54,5 +60,5 @@ module.exports = {
   createToken,
   findByToken,
   deleteByToken,
-  findTokenById
+  findTokenById,
 };

@@ -1,7 +1,25 @@
 const userRepository = require("../repositories/user_repository");
 const tokenRepository = require("../repositories/token_repository");
 const { comparePassword } = require("../utils/hash_password");
-const { generateToken, generateRefreshToken } = require("../utils/jwt");
+const {
+  generateToken,
+  generateRefreshToken,
+  verifyEmailToken,
+} = require("../utils/jwt");
+
+exports.verifyEmail = async (token) => {
+  const decoded = await verifyEmailToken(token);
+  const user = await userRepository.findByEmail(decoded.email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  await userRepository.update(user.id, {
+    isVerified: true,
+    // verifiedAt: new Date(),
+    verifyToken: null,
+  });
+  return user;
+};
 
 exports.login = async (email, password) => {
   const user = await userRepository.findByEmail(email);
@@ -12,6 +30,10 @@ exports.login = async (email, password) => {
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) {
     throw new Error("Incorrect password");
+  }
+
+  if (!user.isVerified) {
+    throw new Error("User is not verified");
   }
 
   const token = await generateToken({
@@ -25,12 +47,11 @@ exports.login = async (email, password) => {
   if (findToken) {
     throw new Error("Token already exists");
   }
-  
+
   await tokenRepository.createToken({
     token: refreshToken,
     userId: user.id,
   });
-
 
   return {
     token,
